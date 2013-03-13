@@ -1,0 +1,10 @@
+<document>
+	<item x=2,y=323, id="3"></item>
+	<item></item>
+	<item></item>
+	<item></item>
+	<item></item>
+	<item></item>
+	<item></item>
+	<item></item>
+</document>
