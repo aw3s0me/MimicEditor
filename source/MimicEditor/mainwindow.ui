@@ -18,16 +18,6 @@
     <item>
      <widget class="QGraphicsView" name="graphicsView"/>
     </item>
-    <item>
-     <widget class="QTextEdit" name="textEdit"/>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>PushButton</string>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -36,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>513</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

@@ -1,2 +1,0 @@
-Reviewed-by: Aleksander Korovin
-Signed-off-by: Aleksander Korovin
