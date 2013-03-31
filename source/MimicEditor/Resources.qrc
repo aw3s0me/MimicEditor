@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/Images">
+        <file>blank_sheet.jpg</file>
+        <file>iconexmpl.png</file>
+        <file>linepointer.png</file>
+        <file>pointer.png</file>
+        <file>temp.svg</file>
+    </qresource>
+</RCC>

@@ -5,20 +5,30 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += svg
+QT       += xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = MimicEditor
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         mainwindow.cpp \
-    scene.cpp \
-    item.cpp
+    schemaitem.cpp \
+    schemascene.cpp \
+    schematextitem.cpp \
+    schemaarrowitem.cpp \
+    schemaledgearrowitem.cpp
 
 HEADERS  += mainwindow.h \
-    scene.h \
-    item.h
+    schemascene.h \
+    schemaitem.h \
+    schematextitem.h \
+    schemaarrowitem.h \
+    schemaledgearrowitem.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    Resources.qrc

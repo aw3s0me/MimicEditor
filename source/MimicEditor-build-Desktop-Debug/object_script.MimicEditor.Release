@@ -1,0 +1,12 @@
+INPUT(
+./release/main.o
+./release/mainwindow.o
+./release/schemaitem.o
+./release/schemascene.o
+./release/schematextitem.o
+./release/schemaarrowitem.o
+./release/schemaledgearrowitem.o
+./release/moc_mainwindow.o
+./release/moc_schemascene.o
+./release/qrc_Resources.o
+);
