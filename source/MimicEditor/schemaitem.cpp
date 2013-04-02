@@ -16,6 +16,7 @@ SchemaItem::SchemaItem(ItemType itemtype, QMenu *contextMenu, QGraphicsItem *par
     case Transformator: {
             QString filename=":/Images/temp.svg";
             renderer()->load(filename);
+            setFlag(ItemIsMovable);
             break;
         }
         case Third:

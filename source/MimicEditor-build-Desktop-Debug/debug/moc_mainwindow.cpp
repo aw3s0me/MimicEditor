@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'mainwindow.h'
 **
-** Created: Sun 31. Mar 13:07:53 2013
+** Created: Mon 1. Apr 16:49:52 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_MainWindow[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      14,   14, // methods
+      11,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -42,9 +42,6 @@ static const uint qt_meta_data_MainWindow[] = {
      234,   11,   11,   11, 0x08,
      260,   11,   11,   11, 0x08,
      286,   11,   11,   11, 0x08,
-     312,   11,   11,   11, 0x08,
-     334,   11,   11,   11, 0x08,
-     365,   11,   11,   11, 0x08,
 
        0        // eod
 };
@@ -59,11 +56,8 @@ static const char qt_meta_stringdata_MainWindow[] = {
     "on_actionSave_triggered()\0"
     "on_actionSaveAs_triggered()\0"
     "on_actionExit_triggered()\0"
-    "on_UndoAction_triggered()\0"
-    "on_RedoAction_triggered()\0"
-    "on_action_triggered()\0"
-    "on_actionAddFilter_triggered()\0"
-    "on_actionAddTransformator_triggered()\0"
+    "on_actionUndo_triggered()\0"
+    "on_actionRedo_triggered()\0"
 };
 
 void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -81,11 +75,8 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 6: _t->on_actionSave_triggered(); break;
         case 7: _t->on_actionSaveAs_triggered(); break;
         case 8: _t->on_actionExit_triggered(); break;
-        case 9: _t->on_UndoAction_triggered(); break;
-        case 10: _t->on_RedoAction_triggered(); break;
-        case 11: _t->on_action_triggered(); break;
-        case 12: _t->on_actionAddFilter_triggered(); break;
-        case 13: _t->on_actionAddTransformator_triggered(); break;
+        case 9: _t->on_actionUndo_triggered(); break;
+        case 10: _t->on_actionRedo_triggered(); break;
         default: ;
         }
     }
@@ -123,9 +114,9 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 14)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 14;
+        _id -= 11;
     }
     return _id;
 }

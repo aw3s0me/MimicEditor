@@ -5,5 +5,17 @@
         <file>linepointer.png</file>
         <file>pointer.png</file>
         <file>temp.svg</file>
+        <file>Icons/blank_document.ico</file>
+        <file>Icons/document_open.ico</file>
+        <file>Icons/document_properties.ico</file>
+        <file>Icons/document_save.ico</file>
+        <file>Icons/document_save_as.ico</file>
+        <file>Icons/edit_redo.ico</file>
+        <file>Icons/edit_undo.ico</file>
+        <file>Icons/exit.ico</file>
+        <file>Icons/help_browser.ico</file>
+        <file>Icons/new_file.ico</file>
+        <file>Icons/save.ico</file>
+        <file>Icons/tools.ico</file>
     </qresource>
 </RCC>

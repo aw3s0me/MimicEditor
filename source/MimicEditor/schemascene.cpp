@@ -27,14 +27,9 @@ void SchemaScene::setItemType(SchemaItem::ItemType type){
 } */
 
 void SchemaScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent){
-    QMessageBox* msgBox;
-
     if(mouseEvent->button()==Qt::LeftButton)
     {
-            msgBox = new QMessageBox();
-            msgBox->setWindowTitle("Hello");
-            msgBox->setText("You Clicked Left Mouse Button");
-            //msgBox->show();
+        qDebug()<<"You Clicked Left Mouse Button on scene";
     }
     else {
         return;
@@ -46,7 +41,6 @@ void SchemaScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent){
             addItem(newItem);
             newItem->setPos(mouseEvent->scenePos());
             emit itemInserted(newItem);
-            msgBox->show();
             break;
         case InsertLine:
             //line=new QGraphicsLineItem(QLineF(mouseEvent->scenePos(),mouseEvent->scenePos()));

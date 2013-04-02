@@ -6,6 +6,7 @@
 #include "schematextitem.h"
 #include <QMessageBox>
 #include <QGraphicsSceneMouseEvent>
+#include <QDebug>
 
 QT_BEGIN_NAMESPACE
 //class QGraphicsSceneMouseEvent;
