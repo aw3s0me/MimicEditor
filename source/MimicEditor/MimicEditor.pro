@@ -19,14 +19,16 @@ SOURCES += main.cpp\
     schemascene.cpp \
     schematextitem.cpp \
     schemaarrowitem.cpp \
-    schemaledgearrowitem.cpp
+    schemaledgearrowitem.cpp \
+    schemaview.cpp
 
 HEADERS  += mainwindow.h \
     schemascene.h \
     schemaitem.h \
     schematextitem.h \
     schemaarrowitem.h \
-    schemaledgearrowitem.h
+    schemaledgearrowitem.h \
+    schemaview.h
 
 FORMS    += mainwindow.ui
 

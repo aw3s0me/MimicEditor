@@ -1,4 +1,4 @@
-#ifndef ITEM_H
+ #ifndef ITEM_H
 #define ITEM_H
 
 #include <QGraphicsSvgItem>
@@ -6,6 +6,9 @@
 #include <QPainter>
 #include <QFileDialog>
 #include <QSvgRenderer>
+#include <QDebug>
+
+class SchemaScene;
 
 QT_BEGIN_NAMESPACE
 class QImage;
@@ -52,13 +55,16 @@ public:
         return Type;
     }
 
-    QImage image() const;
+    //QImage image() const;
 
     QRectF boundingRect() const;
 
     //QSvgRenderer mySvgRenderer;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
 
 private:
     ItemType myItemType;

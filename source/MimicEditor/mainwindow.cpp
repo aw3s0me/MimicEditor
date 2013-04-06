@@ -15,10 +15,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),ui(new Ui::MainWindow)
     {
         ui->setupUi(this);
-        this->setWindowTitle("Редактор мнемосхем");
+        this->setWindowTitle("� едактор мнемосхем");
         InitializeTabWidget();
         buttonItemGroup=initializeButtonGroup();
         connect(buttonItemGroup,SIGNAL(buttonClicked(int)),this, SLOT(ButtonItemGroupClicked(int)));
+        connect(buttonItemGroup,SIGNAL(buttonReleased(int)),this,SLOT(ButtonItemGroupReleased(int)));
         buttonPointerTypeGroup=initializeButtonPointerTypeGroup();
         connect(buttonPointerTypeGroup,SIGNAL(buttonClicked(int)),this,SLOT(ButtonPointerTypeGroupClicked(int)));
         createActions();
@@ -27,6 +28,9 @@ MainWindow::MainWindow(QWidget *parent) :
         createItemToolBar();
         createPointerToolBar();
         connect(ui->tabWidget,SIGNAL(currentChanged(int)),this,SLOT(activateTab(int)));
+        connect(ui->tabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(closingTab(int)));
+        //connect(ui->tabWidget,SIGNAL(),this,SLOT(closingTab(int)));
+
         //connect(ui->pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_clicked()));
         //connect(ui->pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_clicked()));
         //SchemaItem *item = new SchemaItem(QBitmap("pic.png"));
@@ -49,9 +53,11 @@ void MainWindow::InitializeTabWidget(){
     cur_scene=s;
     s->setSceneRect(0,0,1000,500);
     connect(s,SIGNAL(itemInserted(SchemaItem*)),this,SLOT(itemInserted(SchemaItem*)));
-    QGraphicsView *maingrview=new QGraphicsView();
+    SchemaView *maingrview=new SchemaView;
     maingrview->scrollBarWidgets(Qt::AlignRight|Qt::AlignBottom);
+    //connect(maingrview,SIGNAL())
     cur_view=maingrview;
+    cur_mode=s->getMode();
     maingrview->setScene(s);
     ui->tabWidget->setMovable(true);
     ui->tabWidget->removeTab(0);
@@ -103,6 +109,11 @@ void MainWindow::activateTab(int index)
         if(!(cur_scene=qobject_cast<SchemaScene *>(cur_view->scene()))){
             return;
         }
+        else {
+            cur_scene->setMode(cur_mode);
+            cur_scene->setItemType(cur_item);
+            qDebug("set to cur_mode");
+        }
     }
 
 }
@@ -111,7 +122,7 @@ void MainWindow::itemInserted(SchemaItem *item)
 {
     if(cur_scene){
         buttonPointerTypeGroup->button(int(SchemaScene::MoveItem))->setChecked(true);
-        cur_scene->setMode(SchemaScene::Mode(buttonPointerTypeGroup->checkedId()));
+        //cur_scene->setMode(SchemaScene::Mode(buttonPointerTypeGroup->checkedId()));
         buttonItemGroup->button(int(item->itemType()))->setChecked(false);
     }
     else {
@@ -122,9 +133,16 @@ void MainWindow::itemInserted(SchemaItem *item)
 
 void MainWindow::ButtonItemGroupClicked(int id)
 {
-    QList<QAbstractButton *> buttons = buttonItemGroup->buttons();
-    foreach(QAbstractButton *button, buttons){
-        button->setChecked(false);
+    QAbstractButton *checkedById=buttonItemGroup->button(id);
+    QAbstractButton *checkedByMethod=buttonItemGroup->checkedButton();
+    if(checkedById==checkedByMethod&&cur_scene->getMode()!=SchemaScene::MoveItem){
+        buttonItemGroup->setExclusive(false);
+        checkedById->setChecked(false);
+        buttonItemGroup->setExclusive(true);
+        cur_scene->setMode(SchemaScene::MoveItem);
+        cur_mode=SchemaScene::MoveItem;
+        qDebug("Unchecked");
+        return;
     }
     qDebug()<<"You Clicked Button with "+QString::number(id)+" "+QString::number(int(SchemaItem::ItemType(id)));
     /*if (id==InsertTextButton){
@@ -138,7 +156,9 @@ void MainWindow::ButtonItemGroupClicked(int id)
     else{
         if(cur_scene){
             cur_scene->setMode(SchemaScene::InsertItem);
+            cur_mode=SchemaScene::InsertItem;
             cur_scene->setItemType(SchemaItem::ItemType(id));
+            cur_item=SchemaItem::ItemType(id);
         }
         else {
             qDebug("butt_clickERROR");
@@ -164,15 +184,26 @@ void MainWindow::ButtonPointerTypeGroupClicked(int id)
     }
 }
 
+//void MainWindow::ButtonItemGroupReleased(int id)
+
 void MainWindow::on_actionCreate_triggered()
 {
     SchemaScene *newScene = new SchemaScene(itemMenu, this);
     newScene->setSceneRect(0,0,1000,500);
-    QGraphicsView *newGrView=new QGraphicsView(this);
+    newScene->setMode(cur_mode);
+    newScene->setItemType(cur_item);
+    SchemaView *newGrView=new SchemaView(this);
     newGrView->scrollBarWidgets(Qt::AlignRight|Qt::AlignBottom);
     newGrView->setScene(newScene);
     ui->tabWidget->addTab(newGrView,"New Tab");
     ui->tabWidget->show();
+
+}
+
+void MainWindow::closingTab(int index)
+{
+    qDebug() << "Closing tab ?" << QString(index);
+    ui->tabWidget->removeTab(index);
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -207,6 +238,7 @@ void MainWindow::createItemToolBar()
     //добавление кнопок на тулбар с помощью группы кнопок
     QList<QAbstractButton *> buttons=buttonItemGroup->buttons();
     foreach (QAbstractButton *button, buttons){
+        button->setCheckable(true);
         newItemToolBar->addWidget(button);
     }
     newItemToolBar->addSeparator();
@@ -231,7 +263,7 @@ void MainWindow::createPointerToolBar()
 
 void MainWindow::createActions()
 {
-    //Инициализируем Action'ы и коннектим к слотам
+    //�?нициализируем Action'ы и коннектим к слотам
     CreateAction=new QAction(tr("Создать"), this);
     OpenAction=new QAction("Открыть", this);
     SaveAction=new QAction("Сохранить", this);
@@ -290,6 +322,7 @@ QButtonGroup *MainWindow::initializeButtonGroup()
     newButtonGroup->addButton(createWidget(tr("Transformator"),SchemaItem::Transformator),int(SchemaItem::Transformator));
     newButtonGroup->addButton(createWidget(tr("Third"),SchemaItem::Third),int(SchemaItem::Third));
     newButtonGroup->addButton(createWidget("Fourth",SchemaItem::Fourth),int(SchemaItem::Fourth));
+    newButtonGroup->setExclusive(true);
 
     return newButtonGroup;
 }

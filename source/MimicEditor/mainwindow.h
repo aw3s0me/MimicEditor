@@ -4,11 +4,12 @@
 #include <QMainWindow>
 #include <QtGui>
 #include <QtCore>
+#include <QDebug>
 
 
 #include "schemaitem.h"
-
-class SchemaScene;
+#include "schemascene.h"
+#include "schemaview.h"
 
 QT_BEGIN_NAMESPACE
 class QToolButton;
@@ -32,10 +33,12 @@ public:
 
 private slots:
     void activateTab(int);
+    void closingTab(int);
     void itemInserted(SchemaItem *item);
     //void deleteItem();
     void ButtonItemGroupClicked(int id);
     void ButtonPointerTypeGroupClicked(int id);
+    //void ButtonItemGroupReleased(int id);
     void on_actionCreate_triggered();
     void on_actionOpen_triggered();
     void on_actionSave_triggered();
@@ -84,6 +87,8 @@ private:
 
     ///////////////SCENE AND VIEW, INIT FROM TABS/////////////////
     SchemaScene *cur_scene;
+    SchemaScene::Mode cur_mode;
+    SchemaItem::ItemType cur_item;
     QGraphicsView *cur_view;
 
 };

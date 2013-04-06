@@ -1,4 +1,5 @@
 #include "schemaitem.h"
+#include "schemascene.h"
 
 //SchemaItem::SchemaItem(const QPixmap & pixmap): QGraphicsPixmapItem(pixmap) {}
 
@@ -40,9 +41,16 @@ SchemaItem::SchemaItem() : QGraphicsSvgItem(){
 QRectF SchemaItem::boundingRect() const
 {
     return QRectF(0,0,100,100);
+    //return QRectF(0,0,50,50);
 }
 
 void SchemaItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QGraphicsSvgItem::paint(painter, option, widget);
+}
+
+void SchemaItem::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    qDebug() << "Click on item";
+        dynamic_cast<SchemaScene*>(this->scene())->ItemPressed = true;
 }
