@@ -44,6 +44,13 @@ QRectF SchemaItem::boundingRect() const
     //return QRectF(0,0,50,50);
 }
 
+QString SchemaItem::myTypeToString()
+{
+    int index = metaObject()->indexOfEnumerator("ItemType");
+    QMetaEnum metaEnum = metaObject()->enumerator(index);
+    return metaEnum.valueToKey(itemType());
+}
+
 void SchemaItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QGraphicsSvgItem::paint(painter, option, widget);
@@ -51,6 +58,7 @@ void SchemaItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
 void SchemaItem::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    qDebug() << "Click on item";
-        dynamic_cast<SchemaScene*>(this->scene())->ItemPressed = true;
+   // qDebug() << "Click on item";
+        //dynamic_cast<SchemaScene*>(this->scene())->ItemPressed = true;
+        dynamic_cast<SchemaScene*>(this->scene())->movingItem = this;
 }

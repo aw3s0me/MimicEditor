@@ -1,7 +1,8 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "schemascene.h"
 #include "schemaitem.h"
+#include "commands.h"
 #include <QtCore>
 #include <QtGui>
 #include <QGraphicsView>
@@ -15,11 +16,15 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),ui(new Ui::MainWindow)
     {
         ui->setupUi(this);
-        this->setWindowTitle("� едактор мнемосхем");
+        undoStack = new QUndoStack(this);
+        createUndoView();
+        this->setWindowTitle(tr("Редактор мнемосхем"));
         InitializeTabWidget();
         buttonItemGroup=initializeButtonGroup();
+        //connect(buttonItemGroup,SIGNAL(buttonClicked(int)),this, SLOT(ButtonItemGroupClicked(int)));
+        connect(buttonItemGroup,SIGNAL(buttonPressed(int)),this, SLOT(ButtonItemGroupPressed(int)));
         connect(buttonItemGroup,SIGNAL(buttonClicked(int)),this, SLOT(ButtonItemGroupClicked(int)));
-        connect(buttonItemGroup,SIGNAL(buttonReleased(int)),this,SLOT(ButtonItemGroupReleased(int)));
+        //connect(buttonItemGroup,SIGNAL(buttonReleased(int)),this,SLOT(ButtonItemGroupReleased(int)));
         buttonPointerTypeGroup=initializeButtonPointerTypeGroup();
         connect(buttonPointerTypeGroup,SIGNAL(buttonClicked(int)),this,SLOT(ButtonPointerTypeGroupClicked(int)));
         createActions();
@@ -29,22 +34,17 @@ MainWindow::MainWindow(QWidget *parent) :
         createPointerToolBar();
         connect(ui->tabWidget,SIGNAL(currentChanged(int)),this,SLOT(activateTab(int)));
         connect(ui->tabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(closingTab(int)));
-        //connect(ui->tabWidget,SIGNAL(),this,SLOT(closingTab(int)));
-
-        //connect(ui->pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_clicked()));
-        //connect(ui->pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_clicked()));
-        //SchemaItem *item = new SchemaItem(QBitmap("pic.png"));
-        //s->addItem(item);
-        //ui->toolBar->resize(ui->toolBar->minimumWidth(),ui->toolBar->sizeHint().height());
-        //QGraphicsSvgItem *svgitem=new QGraphicsSvgItem("D:/bubbles.svg");
-        //svgitem->setFlag(QGraphicsItem::ItemIsMovable, true);
-        //s->addItem(svgitem);
-
+        UncheckAll = false;
     }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::itemMoved(SchemaItem *movedItem, const QPointF &StartPosition)
+{
+    undoStack->push(new MoveCommand(movedItem, StartPosition));
 }
 
 void MainWindow::InitializeTabWidget(){
@@ -53,6 +53,7 @@ void MainWindow::InitializeTabWidget(){
     cur_scene=s;
     s->setSceneRect(0,0,1000,500);
     connect(s,SIGNAL(itemInserted(SchemaItem*)),this,SLOT(itemInserted(SchemaItem*)));
+    connect(s, SIGNAL(itemMoved(SchemaItem*,QPointF)), this, SLOT(itemMoved(SchemaItem*,QPointF)));
     SchemaView *maingrview=new SchemaView;
     maingrview->scrollBarWidgets(Qt::AlignRight|Qt::AlignBottom);
     //connect(maingrview,SIGNAL())
@@ -131,19 +132,33 @@ void MainWindow::itemInserted(SchemaItem *item)
     }
 }
 
-void MainWindow::ButtonItemGroupClicked(int id)
+void MainWindow::ButtonItemGroupPressed(int id)
 {
+
+    qDebug()<<"You Clicked Button with "+QString::number(id)+" "+QString::number(int(SchemaItem::ItemType(id)));
+    qDebug()<<"Pressed Button with "+QString::number(buttonItemGroup->checkedId())+" "+QString::number(int(SchemaItem::ItemType(id)));
+
     QAbstractButton *checkedById=buttonItemGroup->button(id);
     QAbstractButton *checkedByMethod=buttonItemGroup->checkedButton();
-    if(checkedById==checkedByMethod&&cur_scene->getMode()!=SchemaScene::MoveItem){
-        buttonItemGroup->setExclusive(false);
-        checkedById->setChecked(false);
-        buttonItemGroup->setExclusive(true);
+
+
+    if(checkedById==checkedByMethod/*&&cur_scene->getMode()!=SchemaScene::MoveItem*/){
+        UncheckAll = true;
+        //checkedById->setChecked(false);
+        //buttonItemGroup->setId(-1);
+        //buttonItemGroup->setExclusive(false);
+        //checkedById->setChecked(false);
+        //buttonItemGroup->blockSignals(true);
+        //checkedByMethod->setChecked(true);
+        //buttonItemGroup->setExclusive(true);
         cur_scene->setMode(SchemaScene::MoveItem);
         cur_mode=SchemaScene::MoveItem;
         qDebug("Unchecked");
         return;
     }
+//    checkedById->setChecked(true);
+//    checkedByMethod->setChecked(false);
+
     qDebug()<<"You Clicked Button with "+QString::number(id)+" "+QString::number(int(SchemaItem::ItemType(id)));
     /*if (id==InsertTextButton){
 
@@ -167,6 +182,18 @@ void MainWindow::ButtonItemGroupClicked(int id)
     }
 }
 
+void MainWindow::ButtonItemGroupClicked(int id)
+{
+    if (UncheckAll)
+    {
+        buttonItemGroup->setExclusive(false);
+        QAbstractButton *checkedById=buttonItemGroup->button(id);
+        checkedById->setChecked(false);
+        buttonItemGroup->setExclusive(true);
+        UncheckAll = false;
+    }
+}
+
 void MainWindow::ButtonPointerTypeGroupClicked(int id)
 {
     qDebug()<<"You Clicked Button with "+QString::number(id);
@@ -183,12 +210,16 @@ void MainWindow::ButtonPointerTypeGroupClicked(int id)
         }
     }
 }
-
-//void MainWindow::ButtonItemGroupReleased(int id)
-
+/*
+void MainWindow::ButtonItemGroupReleased(int id)
+{
+    QAbstractButton *releasedButton=buttonItemGroup->button(id);
+}
+*/
 void MainWindow::on_actionCreate_triggered()
 {
     SchemaScene *newScene = new SchemaScene(itemMenu, this);
+    connect(newScene, SIGNAL(itemMoved(SchemaItem*,QPointF)), this, SLOT(itemMoved(SchemaItem*,QPointF)));
     newScene->setSceneRect(0,0,1000,500);
     newScene->setMode(cur_mode);
     newScene->setItemType(cur_item);
@@ -261,16 +292,28 @@ void MainWindow::createPointerToolBar()
     this->addToolBar(Qt::TopToolBarArea, newPointerToolBar);
 }
 
+void MainWindow::createUndoView()
+{
+    undoView = new QUndoView(undoStack);
+    undoView->setWindowTitle(tr("Command List"));
+    undoView->show();
+    undoView->setAttribute(Qt::WA_QuitOnClose, false);
+}
+
 void MainWindow::createActions()
 {
-    //�?нициализируем Action'ы и коннектим к слотам
+    //Инициализируем Action'ы и коннектим к слотам
     CreateAction=new QAction(tr("Создать"), this);
     OpenAction=new QAction("Открыть", this);
     SaveAction=new QAction("Сохранить", this);
     SaveAsAction=new QAction("Сохранить как", this);
     ExitAction=new QAction("Выйти", this);
-    UndoAction=new QAction("Отменить", this);
-    RedoAction=new QAction("Вернуть", this);
+    //UndoAction=new QAction("Отменить", this);
+    UndoAction = undoStack->createUndoAction(this, tr("&Undo"));
+    RedoAction = undoStack->createRedoAction(this, tr("&Redo"));
+    UndoAction->setShortcuts(QKeySequence::Undo);
+    RedoAction->setShortcuts(QKeySequence::Redo);
+    //RedoAction=new QAction("Вернуть", this);
     CreateAction->setStatusTip(tr("Создать"));
     OpenAction->setStatusTip("Открыть");
     SaveAction->setStatusTip("Сохранить");
@@ -323,6 +366,7 @@ QButtonGroup *MainWindow::initializeButtonGroup()
     newButtonGroup->addButton(createWidget(tr("Third"),SchemaItem::Third),int(SchemaItem::Third));
     newButtonGroup->addButton(createWidget("Fourth",SchemaItem::Fourth),int(SchemaItem::Fourth));
     newButtonGroup->setExclusive(true);
+    //newButtonGroup->
 
     return newButtonGroup;
 }

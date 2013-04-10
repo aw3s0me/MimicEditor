@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QSvgRenderer>
 #include <QDebug>
+#include <QMetaEnum>
 
 class SchemaScene;
 
@@ -33,6 +34,8 @@ public:
 
     enum ItemType { Filter, Transformator, Third, Fourth };
 
+    Q_ENUMS(ItemType)
+
     SchemaItem();
 
     //SchemaItem(const QPixmap & pixmap);
@@ -58,7 +61,7 @@ public:
     //QImage image() const;
 
     QRectF boundingRect() const;
-
+    QString myTypeToString();
     //QSvgRenderer mySvgRenderer;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

@@ -30,19 +30,22 @@ public:
     Mode getMode(){
         return myMode;
     }
-    bool ItemPressed;
+    //bool ItemPressed;
+    QGraphicsItem *movingItem;
 
     //SchemaScene(QObject *parent=0);
     
 public slots:
     void setMode(Mode mode);
     void setItemType(SchemaItem::ItemType type);
+
     //void editorLostFocus(SchemaTextItem *item);
 
 signals:
     void itemInserted(SchemaItem *item);
     void textInserted(QGraphicsTextItem *item);
     void itemSelected(QGraphicsItem *item);
+    void itemMoved(SchemaItem *movedItem, const QPointF &movedFromPosition);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
@@ -53,9 +56,11 @@ private:
     bool isItemChange(int type);
     SchemaItem::ItemType myItemType;
     QMenu *myItemMenu;
+
     Mode myMode;
     bool leftButtonDown;
     QPointF startPoint;
+    QPointF oldPos;
     QGraphicsLineItem *line;
     QFont myFont;
     SchemaTextItem *textItem;

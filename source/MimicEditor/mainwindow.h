@@ -5,6 +5,8 @@
 #include <QtGui>
 #include <QtCore>
 #include <QDebug>
+#include <QUndoStack>
+#include <QUndoView>
 
 
 #include "schemaitem.h"
@@ -27,15 +29,20 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     
 public:
+    bool UncheckAll;
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void itemMoved(SchemaItem *movedItem, const QPointF &StartPosition);
 
 private slots:
     void activateTab(int);
     void closingTab(int);
     void itemInserted(SchemaItem *item);
     //void deleteItem();
+//    void ButtonItemGroupReleased(int id);
+    void ButtonItemGroupPressed(int id);
     void ButtonItemGroupClicked(int id);
     void ButtonPointerTypeGroupClicked(int id);
     //void ButtonItemGroupReleased(int id);
@@ -53,6 +60,7 @@ private:
     ///для инициализации
     void createItemToolBar();
     void createPointerToolBar();
+    void createUndoView();
     void InitializeTabWidget();
     void InitializeCommandPanel();
     void InitializeMenuBar();
@@ -90,6 +98,9 @@ private:
     SchemaScene::Mode cur_mode;
     SchemaItem::ItemType cur_item;
     QGraphicsView *cur_view;
+
+    QUndoStack *undoStack;
+    QUndoView *undoView;
 
 };
 
