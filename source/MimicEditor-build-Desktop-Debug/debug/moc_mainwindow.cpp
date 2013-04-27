@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'mainwindow.h'
 **
-** Created: Wed 10. Apr 13:12:16 2013
+** Created: Sat 27. Apr 18:48:14 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_MainWindow[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      14,   14, // methods
+      15,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -35,16 +35,17 @@ static const uint qt_meta_data_MainWindow[] = {
       67,   11,   11,   11, 0x08,
       84,   11,   11,   11, 0x08,
      105,  100,   11,   11, 0x08,
-     134,  131,   11,   11, 0x08,
-     162,  131,   11,   11, 0x08,
-     190,  131,   11,   11, 0x08,
-     225,   11,   11,   11, 0x08,
-     253,   11,   11,   11, 0x08,
-     279,   11,   11,   11, 0x08,
-     305,   11,   11,   11, 0x08,
-     333,   11,   11,   11, 0x08,
-     359,   11,   11,   11, 0x08,
-     385,   11,   11,   11, 0x08,
+     131,   11,   11,   11, 0x08,
+     147,  144,   11,   11, 0x08,
+     175,  144,   11,   11, 0x08,
+     203,  144,   11,   11, 0x08,
+     238,   11,   11,   11, 0x08,
+     266,   11,   11,   11, 0x08,
+     292,   11,   11,   11, 0x08,
+     318,   11,   11,   11, 0x08,
+     346,   11,   11,   11, 0x08,
+     372,   11,   11,   11, 0x08,
+     398,   11,   11,   11, 0x08,
 
        0        // eod
 };
@@ -53,8 +54,8 @@ static const char qt_meta_stringdata_MainWindow[] = {
     "MainWindow\0\0movedItem,StartPosition\0"
     "itemMoved(SchemaItem*,QPointF)\0"
     "activateTab(int)\0closingTab(int)\0item\0"
-    "itemInserted(SchemaItem*)\0id\0"
-    "ButtonItemGroupPressed(int)\0"
+    "itemInserted(SchemaItem*)\0deleteItem()\0"
+    "id\0ButtonItemGroupPressed(int)\0"
     "ButtonItemGroupClicked(int)\0"
     "ButtonPointerTypeGroupClicked(int)\0"
     "on_actionCreate_triggered()\0"
@@ -76,16 +77,17 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 1: _t->activateTab((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 2: _t->closingTab((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 3: _t->itemInserted((*reinterpret_cast< SchemaItem*(*)>(_a[1]))); break;
-        case 4: _t->ButtonItemGroupPressed((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 5: _t->ButtonItemGroupClicked((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 6: _t->ButtonPointerTypeGroupClicked((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 7: _t->on_actionCreate_triggered(); break;
-        case 8: _t->on_actionOpen_triggered(); break;
-        case 9: _t->on_actionSave_triggered(); break;
-        case 10: _t->on_actionSaveAs_triggered(); break;
-        case 11: _t->on_actionExit_triggered(); break;
-        case 12: _t->on_actionUndo_triggered(); break;
-        case 13: _t->on_actionRedo_triggered(); break;
+        case 4: _t->deleteItem(); break;
+        case 5: _t->ButtonItemGroupPressed((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 6: _t->ButtonItemGroupClicked((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 7: _t->ButtonPointerTypeGroupClicked((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 8: _t->on_actionCreate_triggered(); break;
+        case 9: _t->on_actionOpen_triggered(); break;
+        case 10: _t->on_actionSave_triggered(); break;
+        case 11: _t->on_actionSaveAs_triggered(); break;
+        case 12: _t->on_actionExit_triggered(); break;
+        case 13: _t->on_actionUndo_triggered(); break;
+        case 14: _t->on_actionRedo_triggered(); break;
         default: ;
         }
     }
@@ -123,9 +125,9 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 14)
+        if (_id < 15)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 14;
+        _id -= 15;
     }
     return _id;
 }

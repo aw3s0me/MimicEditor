@@ -1,14 +1,17 @@
- #ifndef ITEM_H
+#ifndef ITEM_H
 #define ITEM_H
 
-#include <QGraphicsSvgItem>
+#include <QGraphicsItem>
 #include <QList>
 #include <QPainter>
 #include <QFileDialog>
-#include <QSvgRenderer>
 #include <QDebug>
 #include <QMetaEnum>
+#include <QMenu>
+#include <QtGui>
+#include <QtCore>
 
+//
 class SchemaScene;
 
 QT_BEGIN_NAMESPACE
@@ -21,22 +24,21 @@ class QMenu;
 class QGraphicsSceneContextMenuEvent;
 class QStyleOptionGraphicsItem;
 class QWidget;
-class QPolygonF;
 QT_END_NAMESPACE
 
 class SchemaArrowItem;
 
-class SchemaItem : public QGraphicsSvgItem
+class SchemaItem : public QObject, public QGraphicsItem
 {
+    Q_OBJECT
 public:
-
     enum { Type = UserType + 15 };
 
-    enum ItemType { Filter, Transformator, Third, Fourth };
+    enum ItemType { Filter, Transformator, Amplifier, Fourth };
 
     Q_ENUMS(ItemType)
 
-    SchemaItem();
+   // SchemaItem();
 
     //SchemaItem(const QPixmap & pixmap);
 
@@ -46,13 +48,12 @@ public:
     void removeArrow(SchemaArrowItem *arrow);
     void removeArrows();
 
+
     ItemType itemType() const{
         return myItemType;
     }
 
-    QPolygonF polygon() const{
-        return myPolygon;
-    }
+
 
     int type() const{
         return Type;
@@ -62,16 +63,14 @@ public:
 
     QRectF boundingRect() const;
     QString myTypeToString();
-    //QSvgRenderer mySvgRenderer;
-
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRect BoundingBox;
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
-
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 private:
     ItemType myItemType;
-    QPolygonF myPolygon;
     QMenu *myContextMenu;
     QList<SchemaArrowItem*> arrows;
 };

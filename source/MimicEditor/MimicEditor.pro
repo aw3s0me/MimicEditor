@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network widgets
 QT       += svg
 QT       += xml
 
@@ -19,18 +19,18 @@ SOURCES += main.cpp\
     schemascene.cpp \
     schematextitem.cpp \
     schemaarrowitem.cpp \
-    schemaledgearrowitem.cpp \
     schemaview.cpp \
-    commands.cpp
+    commands.cpp \
+    schemapolyarrowitem.cpp
 
 HEADERS  += mainwindow.h \
     schemascene.h \
     schemaitem.h \
     schematextitem.h \
     schemaarrowitem.h \
-    schemaledgearrowitem.h \
     schemaview.h \
-    commands.h
+    commands.h \
+    schemapolyarrowitem.h
 
 FORMS    += mainwindow.ui
 

@@ -16,20 +16,24 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),ui(new Ui::MainWindow)
     {
         ui->setupUi(this);
+        buttonItemGroup=initializeButtonGroup();
         undoStack = new QUndoStack(this);
         createUndoView();
-        this->setWindowTitle(tr("Редактор мнемосхем"));
+        createActions();
+        InitializeItemMenu();
+
+        this->setWindowTitle("Редактор мнемосхем");
         InitializeTabWidget();
-        buttonItemGroup=initializeButtonGroup();
         //connect(buttonItemGroup,SIGNAL(buttonClicked(int)),this, SLOT(ButtonItemGroupClicked(int)));
         connect(buttonItemGroup,SIGNAL(buttonPressed(int)),this, SLOT(ButtonItemGroupPressed(int)));
         connect(buttonItemGroup,SIGNAL(buttonClicked(int)),this, SLOT(ButtonItemGroupClicked(int)));
         //connect(buttonItemGroup,SIGNAL(buttonReleased(int)),this,SLOT(ButtonItemGroupReleased(int)));
         buttonPointerTypeGroup=initializeButtonPointerTypeGroup();
         connect(buttonPointerTypeGroup,SIGNAL(buttonClicked(int)),this,SLOT(ButtonPointerTypeGroupClicked(int)));
-        createActions();
-        InitializeCommandPanel();
+
         InitializeMenuBar();
+
+        InitializeCommandPanel();
         createItemToolBar();
         createPointerToolBar();
         connect(ui->tabWidget,SIGNAL(currentChanged(int)),this,SLOT(activateTab(int)));
@@ -48,7 +52,6 @@ void MainWindow::itemMoved(SchemaItem *movedItem, const QPointF &StartPosition)
 }
 
 void MainWindow::InitializeTabWidget(){
-    itemMenu=menuBar()->addMenu(tr("&Item"));
     SchemaScene *s = new SchemaScene(itemMenu, this);
     cur_scene=s;
     s->setSceneRect(0,0,1000,500);
@@ -99,15 +102,21 @@ void MainWindow::InitializeMenuBar()
     ui->EditMenu->addAction(RedoAction);
 }
 
+void MainWindow::InitializeItemMenu()
+{
+    itemMenu=new QMenu("Элемент");
+    itemMenu->addAction(deleteAction);
+}
+
 void MainWindow::activateTab(int index)
 {
     qDebug()<<"Selected Tab Index is: "+QString::number(index);
 
-    if (!(cur_view=qobject_cast<QGraphicsView *>(ui->tabWidget->widget(index)))){
+    if (!(cur_view=dynamic_cast<SchemaView *>(ui->tabWidget->widget(index)))){
         return;
     }
     else {
-        if(!(cur_scene=qobject_cast<SchemaScene *>(cur_view->scene()))){
+        if(!(cur_scene=dynamic_cast<SchemaScene *>(cur_view->scene()))){
             return;
         }
         else {
@@ -116,7 +125,6 @@ void MainWindow::activateTab(int index)
             qDebug("set to cur_mode");
         }
     }
-
 }
 
 void MainWindow::itemInserted(SchemaItem *item)
@@ -124,12 +132,23 @@ void MainWindow::itemInserted(SchemaItem *item)
     if(cur_scene){
         buttonPointerTypeGroup->button(int(SchemaScene::MoveItem))->setChecked(true);
         //cur_scene->setMode(SchemaScene::Mode(buttonPointerTypeGroup->checkedId()));
+        ///ОШИБКА БЛЕА///ИСПРАВЛЕНА БЛЕА
         buttonItemGroup->button(int(item->itemType()))->setChecked(false);
+        QUndoCommand *addCommand=new AddCommand(item,dynamic_cast<SchemaScene*>(item->scene()));
+        undoStack->push(addCommand);
     }
     else {
         qDebug("ItemInsError");
         return;
     }
+}
+
+void MainWindow::deleteItem()
+{
+    if (cur_scene->selectedItems().isEmpty())
+        return;
+    QUndoCommand *deleteCommand = new DeleteCommand(cur_scene);
+    undoStack->push(deleteCommand);
 }
 
 void MainWindow::ButtonItemGroupPressed(int id)
@@ -142,15 +161,8 @@ void MainWindow::ButtonItemGroupPressed(int id)
     QAbstractButton *checkedByMethod=buttonItemGroup->checkedButton();
 
 
-    if(checkedById==checkedByMethod/*&&cur_scene->getMode()!=SchemaScene::MoveItem*/){
+    if(checkedById==checkedByMethod){
         UncheckAll = true;
-        //checkedById->setChecked(false);
-        //buttonItemGroup->setId(-1);
-        //buttonItemGroup->setExclusive(false);
-        //checkedById->setChecked(false);
-        //buttonItemGroup->blockSignals(true);
-        //checkedByMethod->setChecked(true);
-        //buttonItemGroup->setExclusive(true);
         cur_scene->setMode(SchemaScene::MoveItem);
         cur_mode=SchemaScene::MoveItem;
         qDebug("Unchecked");
@@ -174,6 +186,7 @@ void MainWindow::ButtonItemGroupPressed(int id)
             cur_mode=SchemaScene::InsertItem;
             cur_scene->setItemType(SchemaItem::ItemType(id));
             cur_item=SchemaItem::ItemType(id);
+
         }
         else {
             qDebug("butt_clickERROR");
@@ -219,6 +232,7 @@ void MainWindow::ButtonItemGroupReleased(int id)
 void MainWindow::on_actionCreate_triggered()
 {
     SchemaScene *newScene = new SchemaScene(itemMenu, this);
+    connect(newScene,SIGNAL(itemInserted(SchemaItem*)),this,SLOT(itemInserted(SchemaItem*)));
     connect(newScene, SIGNAL(itemMoved(SchemaItem*,QPointF)), this, SLOT(itemMoved(SchemaItem*,QPointF)));
     newScene->setSceneRect(0,0,1000,500);
     newScene->setMode(cur_mode);
@@ -226,7 +240,7 @@ void MainWindow::on_actionCreate_triggered()
     SchemaView *newGrView=new SchemaView(this);
     newGrView->scrollBarWidgets(Qt::AlignRight|Qt::AlignBottom);
     newGrView->setScene(newScene);
-    ui->tabWidget->addTab(newGrView,"New Tab");
+    ui->tabWidget->addTab(newGrView,"Новая схема");
     ui->tabWidget->show();
 
 }
@@ -295,7 +309,7 @@ void MainWindow::createPointerToolBar()
 void MainWindow::createUndoView()
 {
     undoView = new QUndoView(undoStack);
-    undoView->setWindowTitle(tr("Command List"));
+    undoView->setWindowTitle("Список команд");
     undoView->show();
     undoView->setAttribute(Qt::WA_QuitOnClose, false);
 }
@@ -303,18 +317,17 @@ void MainWindow::createUndoView()
 void MainWindow::createActions()
 {
     //Инициализируем Action'ы и коннектим к слотам
-    CreateAction=new QAction(tr("Создать"), this);
+    CreateAction=new QAction("Создать", this);
     OpenAction=new QAction("Открыть", this);
     SaveAction=new QAction("Сохранить", this);
     SaveAsAction=new QAction("Сохранить как", this);
     ExitAction=new QAction("Выйти", this);
     //UndoAction=new QAction("Отменить", this);
-    UndoAction = undoStack->createUndoAction(this, tr("&Undo"));
-    RedoAction = undoStack->createRedoAction(this, tr("&Redo"));
+    UndoAction = undoStack->createUndoAction(this, "Отменить");
+    RedoAction = undoStack->createRedoAction(this, "Вернуть");
     UndoAction->setShortcuts(QKeySequence::Undo);
     RedoAction->setShortcuts(QKeySequence::Redo);
-    //RedoAction=new QAction("Вернуть", this);
-    CreateAction->setStatusTip(tr("Создать"));
+    CreateAction->setStatusTip("Создать");
     OpenAction->setStatusTip("Открыть");
     SaveAction->setStatusTip("Сохранить");
     SaveAsAction->setStatusTip("Сохранить как");
@@ -337,10 +350,14 @@ void MainWindow::createActions()
     RedoAction->setIcon(QIcon(":/Images/Icons/edit_redo.ico"));
 
     //QAction *addAction;
-    //QAction *deleteAction;
     //QAction *toFrontAction;
     //QAction *sendBackAction;
     //QAction *aboutAction;
+    deleteAction=new QAction("Удалить элемент", this);
+    deleteAction->setStatusTip("Удалить элемент");
+    connect(deleteAction, SIGNAL(triggered()),this, SLOT(deleteItem()));
+    deleteAction->setIcon(QIcon(":/Images/Icons/exit.ico"));
+
 }
 
 QAbstractButton *MainWindow::createWidget(const QString &text, SchemaItem::ItemType type)
@@ -361,12 +378,11 @@ QAbstractButton *MainWindow::createWidget(const QString &text, SchemaItem::ItemT
 QButtonGroup *MainWindow::initializeButtonGroup()
 {
     QButtonGroup *newButtonGroup=new QButtonGroup(this);
-    newButtonGroup->addButton(createWidget(tr("Filter"),SchemaItem::Filter),int(SchemaItem::Filter));
-    newButtonGroup->addButton(createWidget(tr("Transformator"),SchemaItem::Transformator),int(SchemaItem::Transformator));
-    newButtonGroup->addButton(createWidget(tr("Third"),SchemaItem::Third),int(SchemaItem::Third));
-    newButtonGroup->addButton(createWidget("Fourth",SchemaItem::Fourth),int(SchemaItem::Fourth));
+    newButtonGroup->addButton(createWidget("Фильтр",SchemaItem::Filter),int(SchemaItem::Filter));
+    newButtonGroup->addButton(createWidget("Конвертер",SchemaItem::Transformator),int(SchemaItem::Transformator));
+    newButtonGroup->addButton(createWidget("Малошумящий усилитель",SchemaItem::Amplifier),int(SchemaItem::Amplifier));
+    newButtonGroup->addButton(createWidget("temp_widg",SchemaItem::Fourth),int(SchemaItem::Fourth));
     newButtonGroup->setExclusive(true);
-    //newButtonGroup->
 
     return newButtonGroup;
 }

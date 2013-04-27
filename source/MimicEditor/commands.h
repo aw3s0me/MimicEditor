@@ -8,13 +8,22 @@
 #include "schemaitem.h"
 #include "schemascene.h"
 
+/*Три типа комманд - передвижение, добавление, удаление,
+ *комманду наследуем от QUndoCommand, для того, чтобы иметь взаимодействие
+ *с классом QUndoStack. Перегружаем методы undo, redo.
+ */
+
+/*MoveCommand команда имеет указатель на итем, чтобы иметь доступ к Item'y
+ *А также старую и новую позицию
+ */
 class MoveCommand:public QUndoCommand
 {
 public:
-    enum {Id = 1234 };
+    enum {Id = 1234 }; //инумератор попомщник для id()
     MoveCommand(SchemaItem *item, const QPointF &oldPos, QUndoCommand *parent=0);
     void undo();
     void redo();
+    //Если две команды имеют ТОТ же id, то программа попытается только объединить их, не удалить
     bool mergeWith(const QUndoCommand *command);
     int id() const {return Id;}
 private:
@@ -23,6 +32,7 @@ private:
     QPointF newPos;
 };
 
+//указатель на item, и указатель на сцену, чтобы взаимодействовать со сценой
 class DeleteCommand : public QUndoCommand
 {
 public:
@@ -37,7 +47,7 @@ private:
 class AddCommand : public QUndoCommand
 {
 public:
-    AddCommand(SchemaItem::ItemType addItemType, SchemaScene *scene, QMenu *contextMenu, QUndoCommand *parent=0);
+    AddCommand(SchemaItem *item, SchemaScene *scene, QUndoCommand *parent=0);
     ~AddCommand();
 
     void undo();

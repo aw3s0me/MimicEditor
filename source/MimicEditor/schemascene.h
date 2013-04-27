@@ -1,9 +1,9 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include <QGraphicsScene>
 #include "schemaitem.h"
 #include "schematextitem.h"
+#include <QGraphicsScene>
 #include <QMessageBox>
 #include <QGraphicsSceneMouseEvent>
 #include <QDebug>

@@ -40,7 +40,7 @@ private slots:
     void activateTab(int);
     void closingTab(int);
     void itemInserted(SchemaItem *item);
-    //void deleteItem();
+    void deleteItem();
 //    void ButtonItemGroupReleased(int id);
     void ButtonItemGroupPressed(int id);
     void ButtonItemGroupClicked(int id);
@@ -64,6 +64,7 @@ private:
     void InitializeTabWidget();
     void InitializeCommandPanel();
     void InitializeMenuBar();
+    void InitializeItemMenu();
 
     void createActions();
     ///для инициализации виджета
@@ -96,8 +97,8 @@ private:
     ///////////////SCENE AND VIEW, INIT FROM TABS/////////////////
     SchemaScene *cur_scene;
     SchemaScene::Mode cur_mode;
-    SchemaItem::ItemType cur_item;
-    QGraphicsView *cur_view;
+    SchemaItem::ItemType cur_item; //чтобы мы могли добавлять item на разных табах
+    SchemaView *cur_view;
 
     QUndoStack *undoStack;
     QUndoView *undoView;

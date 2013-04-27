@@ -64,9 +64,14 @@ void SchemaScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent){
                 break;
             } */
             newItem=new SchemaItem(myItemType, myItemMenu);
+
             addItem(newItem);
-            //newItem->setPos(mouseEvent->scenePos());
+
+            //newItem->setPos(mouseEvent->buttonDownScenePos(Qt::LeftButton).x(), mouseEvent->buttonDownScenePos(Qt::LeftButton).y());
+            //newItem->setPos(mouseEvent->scenePos().x()-(newItem->boundingRect().width()/2),mouseEvent->scenePos().y()-(newItem->boundingRect().height()/2));
             newItem->setPos(mouseEvent->scenePos().x()-(newItem->boundingRect().width()/2),mouseEvent->scenePos().y()-(newItem->boundingRect().height()/2));
+
+
             emit itemInserted(newItem);
             break;
         }
@@ -97,6 +102,13 @@ void SchemaScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent){
 
 void SchemaScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
+    QList<QGraphicsItem *> items = (this->items());
+
+    foreach( QGraphicsItem *item, items )
+    {
+        item->setSelected(false);
+    }
+
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
     if (movingItem!=0 && mouseEvent->button() == Qt::LeftButton){
         //if (oldPos!=movingItem->pos()) {

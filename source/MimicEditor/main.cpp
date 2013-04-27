@@ -4,9 +4,13 @@
 
 int main(int argc, char *argv[])
 {
-   QTextCodec *utfcodec = QTextCodec::codecForName("Unicode");
-   QTextCodec::setCodecForTr(utfcodec);
-   QTextCodec::setCodecForCStrings(utfcodec);
+    //Q_INIT_RESOURCE(MimicEditor);
+   QTextCodec *codec = QTextCodec::codecForName("windows-1251");
+   QTextCodec *codecForTr = QTextCodec::codecForName("utf-8");
+   //QTextCodec *codec = QTextCodec::codecForName("KOI8-R");
+   QTextCodec::setCodecForTr(codecForTr);
+   QTextCodec::setCodecForCStrings(codec);
+   QTextCodec::setCodecForLocale(codec);
 
     QApplication a(argc, argv);
     MainWindow w;

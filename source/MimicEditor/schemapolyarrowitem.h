@@ -1,10 +1,10 @@
 #ifndef SCHEMALEDGEARROWITEM_H
 #define SCHEMALEDGEARROWITEM_H
 
-class SchemaLedgeArrowItem
+class SchemaPolyArrowItem
 {
 public:
-    SchemaLedgeArrowItem();
+    SchemaPolyArrowItem();
 };
 
 #endif // SCHEMALEDGEARROWITEM_H

@@ -13,27 +13,28 @@ void MoveCommand::undo()
 {
     myItem->setPos(myOldPos);
     myItem->scene()->update();
-    setText(QObject::tr("Move %1").arg(createCommandString(myItem,newPos)));
+    setText(QObject::tr("Перемещение на %1").arg(createCommandString(myItem,newPos)));
 }
 
 void MoveCommand::redo()
 {
     myItem->setPos(newPos);
-    setText(QObject::tr("Move %1").arg(createCommandString(myItem, newPos)));
+    setText(QObject::tr("Перемещение на %1").arg(createCommandString(myItem, newPos)));
 }
 
 
 bool MoveCommand::mergeWith(const QUndoCommand *command)
 {
+    //безопасное приведение
     const MoveCommand *moveCommand=static_cast<const MoveCommand*>(command);
-    SchemaItem *item=moveCommand->myItem;
+    SchemaItem *item=moveCommand->myItem;//получаем итем новой команды
 
-    if(myItem!=item){
+    if(myItem!=item){ //если итем старой команды не равен итему новой команды в параметре
         return false;
     }
 
-    newPos=item->pos();
-    setText(QObject::tr("Move %1").arg(createCommandString(myItem,newPos)));
+    newPos=item->pos(); //меняем позицию
+    setText(QObject::tr("Перемещение на %1").arg(createCommandString(myItem,newPos)));
 
     return true;
 }
@@ -44,34 +45,28 @@ DeleteCommand::DeleteCommand(SchemaScene *scene, QUndoCommand *parent)
 {
     myScene=scene;
     QList<QGraphicsItem *> list = myScene->selectedItems();
-    list.first()->setSelected(false);
+    list.first()->setSelected(false); //инициализируем delete команду левым элементом
     myItem=static_cast<SchemaItem *>(list.first());
-    setText(QObject::tr("Delete %1").arg(createCommandString(myItem,myItem->pos())));
+    setText(QObject::tr("Удаление %1").arg(createCommandString(myItem,myItem->pos())));
 }
 
 void DeleteCommand::undo()
 {
-    myScene->addItem(myItem);
+    myScene->addItem(myItem); //Добавляем обратно и обновляем
     myScene->update();
 }
 
 void DeleteCommand::redo()
 {
-    myScene->removeItem(myItem);
+    myScene->removeItem(myItem); //удаляем со сцены
 }
 
-AddCommand::AddCommand(SchemaItem::ItemType addItemType, SchemaScene *scene, QMenu *contextMenu ,QUndoCommand *parent)
-    :QUndoCommand(parent)
+AddCommand::AddCommand(SchemaItem *item, SchemaScene *scene, QUndoCommand *parent)
 {
-    static int itemCount = 0;
-
     myScene=scene;
-    myItem=new SchemaItem(addItemType,contextMenu);
-    initialPos=QPointF((itemCount * 15)%int(scene->width()),(itemCount * 15)%int(scene->height()));
-
-    scene->update();
-    ++itemCount;
-    setText(QObject::tr("Add %1").arg(createCommandString(myItem,initialPos)));
+    myItem=item;
+    initialPos=item->pos();
+    setText(QObject::tr("Добавление на %1").arg(createCommandString(myItem,initialPos)));
 }
 
 AddCommand::~AddCommand()
